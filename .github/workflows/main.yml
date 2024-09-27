@@ -23,8 +23,19 @@ jobs:
 
       - name: Update Submodule
         run: |
-          git submodule update --remote --merge
+          # Deinitialize the submodule in case of unrelated histories
+          git submodule deinit -f test-sub
+          
+          # Remove the submodule directory to ensure it's clean
+          rm -rf test-sub
+          
+          # Reinitialize the submodule and update it to the latest commit
+          git submodule update --init --remote --merge test-sub
+          
+          # Add the submodule changes to the index
           git add test-sub
+          
+          # Commit the changes, if there are any, otherwise echo a message
           git commit -m "Update submodule to latest commit" || echo "No changes to commit"
 
       - name: Get token
