@@ -23,60 +23,21 @@ jobs:
 
       - name: Update Submodule
         run: |
-          git submodule deinit -f -- test-sub
           git submodule update --init --recursive
           cd test-sub
           git fetch origin
           git merge origin/main || git merge --allow-unrelated-histories origin/main || true
+          git add .
+          git commit -m "Update submodule to latest commit" || echo "No changes to commit in submodule"
           cd ..
           git add test-sub
-          git commit -m "Update submodule to latest commit" || echo "No changes to commit"
+          git commit -m "Update submodule reference" || echo "No changes to submodule reference"
 
-      - name: Check for Merge Conflicts
-        id: check_conflicts
+      - name: Push Changes and Create Pull Request
         run: |
-          if git ls-files -u | grep -q '^[^ ]'; then
-            echo "conflicts=true" >> $GITHUB_ENV
-          else
-            echo "conflicts=false" >> $GITHUB_ENV
-          fi
-
-      - name: Resolve Merge Conflicts
-        if: env.conflicts == 'true'
-        run: |
-          git merge --abort || true
-          git reset --hard
-          git submodule update --remote --merge
-          git add test-sub
-          git commit -m "Resolve merge conflicts in submodule" || echo "No changes to commit"
-
-      - name: Ensure Submodule Changes are Staged
-        run: |
-          git submodule foreach --recursive 'git add -A'
-          git add test-sub
-          git commit -m "Ensure submodule changes are staged" || echo "No changes to commit"
-
-      - name: List Submodule Status
-        run: |
-          git submodule status
-          git status
-          git diff
-
-      - name: Create Unique Branch Name
-        id: create_branch
-        run: echo "branch_name=update-submodule-$(date +%s)" >> $GITHUB_ENV
-
-      - name: Push Changes
-        run: |
-          git checkout -b ${{ env.branch_name }}
-          git push origin ${{ env.branch_name }}
-
-      - name: Create Pull Request
-        uses: peter-evans/create-pull-request@v7
-        with:
-          token: ${{ secrets.GITHUB_TOKEN }}
-          base: master
-          branch: ${{ env.branch_name }}
-          title: "Update submodule to the latest version"
-          body: "This PR updates the submodule to the latest version."
-          commit-message: "Update submodule to the latest commit"
+          git checkout -b update-submodule-$(date +%s)
+          git push origin HEAD
+          git push --set-upstream origin HEAD
+          gh pr create --fill --base master
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
