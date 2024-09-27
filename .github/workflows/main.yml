@@ -56,6 +56,12 @@ jobs:
           git add test-sub
           git commit -m "Ensure submodule changes are staged" || echo "No changes to commit"
 
+      - name: Debugging: List Submodule Status
+        run: |
+          git submodule status
+          git status
+          git diff
+
       - name: Create Unique Branch Name
         id: create_branch
         run: echo "branch_name=update-submodule-$(date +%s)" >> $GITHUB_ENV
@@ -64,12 +70,6 @@ jobs:
         run: |
           git checkout -b ${{ env.branch_name }}
           git push origin ${{ env.branch_name }}
-          
-      - name: List Submodule Status
-        run: |
-          git submodule status
-          git status
-          git diff
 
       - name: Create Pull Request
         uses: peter-evans/create-pull-request@v4
