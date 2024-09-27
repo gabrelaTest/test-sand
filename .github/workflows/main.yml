@@ -38,6 +38,6 @@ jobs:
           git checkout -b update-submodule-$(date +%s)
           git push origin HEAD
           git push --set-upstream origin HEAD
-          gh pr create --fill --base master
+          gh pr create --title "Update submodule" --body "This PR updates the submodule to the latest commit." --base master
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
