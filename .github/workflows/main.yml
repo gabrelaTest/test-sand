@@ -28,15 +28,24 @@ jobs:
           git submodule update --init --recursive
           cd test-sub
           git fetch origin
-          git merge origin/main || git merge --allow-unrelated-histories origin/main
+          git merge origin/main || git merge --allow-unrelated-histories origin/main || true
           cd ..
           git add test-sub
           git commit -m "Update submodule to latest commit" || echo "No changes to commit"
-          
-      - name: Resolve Merge Conflicts
-        if: failure()
+
+      - name: Check for Merge Conflicts
+        id: check_conflicts
         run: |
-          git merge --abort
+          if git ls-files -u | grep -q '^[^ ]'; then
+            echo "conflicts=true" >> $GITHUB_ENV
+          else
+            echo "conflicts=false" >> $GITHUB_ENV
+          fi
+
+      - name: Resolve Merge Conflicts
+        if: env.conflicts == 'true'
+        run: |
+          git merge --abort || true
           git reset --hard
           git submodule update --remote --merge
           git add test-sub
@@ -45,6 +54,11 @@ jobs:
       - name: Create Unique Branch Name
         id: create_branch
         run: echo "branch_name=update-submodule-$(date +%s)" >> $GITHUB_ENV
+
+      - name: Push Changes
+        run: |
+          git checkout -b ${{ env.branch_name }}
+          git push origin ${{ env.branch_name }}
 
       - name: Create Pull Request
         uses: peter-evans/create-pull-request@v4
