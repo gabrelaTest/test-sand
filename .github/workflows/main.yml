@@ -32,6 +32,15 @@ jobs:
           cd ..
           git add test-sub
           git commit -m "Update submodule to latest commit" || echo "No changes to commit"
+          
+      - name: Resolve Merge Conflicts
+        if: failure()
+        run: |
+          git merge --abort
+          git reset --hard
+          git submodule update --remote --merge
+          git add test-sub
+          git commit -m "Resolve merge conflicts in submodule" || echo "No changes to commit"
 
       - name: Create Unique Branch Name
         id: create_branch
