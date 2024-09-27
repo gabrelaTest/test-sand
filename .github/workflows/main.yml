@@ -39,7 +39,6 @@ jobs:
         with:
           application_id: ${{ secrets.GH_APP_ID }}
           application_private_key: ${{ secrets.GH_APP_PRIVATE_KEY }}
-          permissions: "pull-requests:write"
           
       - name: Create commits
         run: |
