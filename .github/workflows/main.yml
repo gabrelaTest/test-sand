@@ -3,6 +3,7 @@ name: Update Submodules and Create PR
 on:
   repository_dispatch:
     types: [test-submodules-update]
+  workflow_dispatch:
 
 permissions:
   contents: write
@@ -18,8 +19,13 @@ jobs:
 
       - name: Update Submodule
         run: |
-          git submodule update --remote --merge
-          git add test-submodules
+          git submodule deinit -f -- test-sub
+          git submodule update --init --recursive
+          cd test-sub
+          git fetch origin
+          git merge origin/main || git merge --allow-unrelated-histories origin/main
+          cd ..
+          git add test-sub
           git commit -m "Update submodule to latest commit" || echo "No changes to commit"
 
       - name: Create Unique Branch Name
