@@ -6,6 +6,7 @@ on:
   
 permissions:
   contents: write
+  pull-requests: write
 
 jobs:
   update-submodules:
@@ -38,7 +39,7 @@ jobs:
         with:
           application_id: ${{ secrets.GH_APP_ID }}
           application_private_key: ${{ secrets.GH_APP_PRIVATE_KEY }}
-          permissions: "pull-request:write"
+          permissions: "pull-requests:write"
       
       - name: Push Changes and Create Pull Request
         run: |
