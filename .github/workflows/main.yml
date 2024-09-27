@@ -52,7 +52,7 @@ jobs:
 
       - name: Ensure Submodule Changes are Staged
         run: |
-          git submodule foreach --recursive git add .
+          git submodule foreach --recursive 'git add -A'
           git add test-sub
           git commit -m "Ensure submodule changes are staged" || echo "No changes to commit"
 
@@ -64,9 +64,15 @@ jobs:
         run: |
           git checkout -b ${{ env.branch_name }}
           git push origin ${{ env.branch_name }}
+          
+      - name: List Submodule Status
+        run: |
+          git submodule status
+          git status
+          git diff
 
       - name: Create Pull Request
-        uses: peter-evans/create-pull-request@v7
+        uses: peter-evans/create-pull-request@v4
         with:
           token: ${{ secrets.GITHUB_TOKEN }}
           base: master
