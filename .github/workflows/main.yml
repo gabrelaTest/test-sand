@@ -56,7 +56,7 @@ jobs:
           git add test-sub
           git commit -m "Ensure submodule changes are staged" || echo "No changes to commit"
 
-      - name: Debugging: List Submodule Status
+      - name: List Submodule Status
         run: |
           git submodule status
           git status
