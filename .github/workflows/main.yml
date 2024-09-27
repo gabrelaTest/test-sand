@@ -23,15 +23,9 @@ jobs:
 
       - name: Update Submodule
         run: |
-          git submodule update --init --recursive
-          cd test-sub
-          git fetch origin
-          git merge origin/main || git merge --allow-unrelated-histories origin/main || true
-          git add .
-          git commit -m "Update submodule to latest commit" || echo "No changes to commit in submodule"
-          cd ..
-          git add test-sub
-          git commit -m "Update submodule reference" || echo "No changes to submodule reference"
+          git submodule update --remote --merge
+          git add maplytics-submodules
+          git commit -m "Update submodule to latest commit" || echo "No changes to commit"
 
       - name: Get token
         id: get_app_token
@@ -39,18 +33,6 @@ jobs:
         with:
           application_id: ${{ secrets.GH_APP_ID }}
           application_private_key: ${{ secrets.GH_APP_PRIVATE_KEY }}
-
-      # - name: Create commits
-      #   run: |
-      #     date +%s > report.txt
-      #     git add report.txt
-      #     git commit -m "Modify tracked file during workflow"
-      #     date +%s > new-report.txt
-      #     git add new-report.txt
-      #     git commit -m "Add untracked file during workflow"
-
-      # - name: Uncommitted change
-      #   run: date +%s > report.txt
 
       - name: Create Pull Request
         uses: peter-evans/create-pull-request@v7
