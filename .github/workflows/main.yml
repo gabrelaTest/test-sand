@@ -33,6 +33,13 @@ jobs:
           git add test-sub
           git commit -m "Update submodule reference" || echo "No changes to submodule reference"
 
+      - name: Generate Installation Access Token
+        id: generate-token
+        uses: tibdex/github-app-token@v1
+        with:
+          app_id: ${{ secrets.APP_ID }}
+          private_key: ${{ secrets.APP_PRIVATE_KEY }}
+      
       - name: Push Changes and Create Pull Request
         run: |
           git checkout -b update-submodule-$(date +%s)
@@ -40,4 +47,4 @@ jobs:
           git push --set-upstream origin HEAD
           gh pr create --title "Update submodule" --body "This PR updates the submodule to the latest commit." --base master
         env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          GH_TOKEN: ${{ steps.generate-token.outputs.token }}
