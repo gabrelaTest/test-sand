@@ -51,6 +51,12 @@ jobs:
           git add test-sub
           git commit -m "Resolve merge conflicts in submodule" || echo "No changes to commit"
 
+      - name: Ensure Submodule Changes are Staged
+        run: |
+          git submodule foreach --recursive git add .
+          git add test-sub
+          git commit -m "Ensure submodule changes are staged" || echo "No changes to commit"
+
       - name: Create Unique Branch Name
         id: create_branch
         run: echo "branch_name=update-submodule-$(date +%s)" >> $GITHUB_ENV
