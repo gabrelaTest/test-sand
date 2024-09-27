@@ -57,7 +57,7 @@ jobs:
         with:
           token: ${{ steps.get_app_token.outputs.token }}
           base: main
-          branch: "update-submodule-${{ github.run_id }}"
+          branch: "update-submodule"
           title: "Update submodule to the latest version"
           body: "This PR updates the submodule to the latest version."
           commit-message: "Update submodule to the latest commit"
