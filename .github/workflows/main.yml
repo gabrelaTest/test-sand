@@ -3,7 +3,6 @@ on:
   repository_dispatch:
     types: [test-submodules-update]
   workflow_dispatch:
-
 permissions:
   contents: write
   pull-requests: write
