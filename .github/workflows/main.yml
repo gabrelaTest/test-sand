@@ -1,5 +1,4 @@
 name: Update Submodules and Create PR
-
 on:
   repository_dispatch:
     types: [test-submodules-update]
