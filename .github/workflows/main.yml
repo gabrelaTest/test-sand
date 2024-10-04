@@ -23,11 +23,10 @@ jobs:
 
       - name: Update Submodule
         run: |
-          git submodule deinit -f test-sub
-          rm -rf test-sub
-          git submodule update --init --remote --merge test-sub
-          git add test-sub
+          git submodule update --init --remote --merge maplytics-submodules
+          git add maplytics-submodules
           git commit -m "Update submodule to latest commit" || echo "No changes to commit"
+
 
       - name: Get token
         id: get_app_token
