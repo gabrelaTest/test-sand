@@ -23,8 +23,8 @@ jobs:
 
       - name: Update Submodule
         run: |
-          git submodule update --init --remote --merge maplytics-submodules
-          git add maplytics-submodules
+          git submodule update --init --remote --merge test-sub
+          git add test-sub
           git commit -m "Update submodule to latest commit" || echo "No changes to commit"
 
 
