@@ -25,11 +25,11 @@ jobs:
         run: |
           cd test-sub
           git fetch
-          git checkout master
-          git reset --hard origin/master
+          git checkout main
+          git reset --hard origin/main
           cd ..
           git add test-sub
-          git commit -m "Update submodule to latest commit on master" || echo "No changes to commit"
+          git commit -m "Update submodule to latest commit on main" || echo "No changes to commit"
 
       - name: Get token
         id: get_app_token
