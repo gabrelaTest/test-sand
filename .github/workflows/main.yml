@@ -23,10 +23,14 @@ jobs:
 
       - name: Update Submodule
         run: |
-          git submodule update --init --remote --merge test-sub
-          git add test-sub
-          git commit -m "Update submodule to latest commit" || echo "No changes to commit"
-
+          git submodule update --remote --merge test-sub
+          SUBMODULE_STATUS=$(git status --porcelain test-sub)
+          if [ ! -z "$SUBMODULE_STATUS" ]; then
+            git add test-sub
+            git commit -m "Update submodule to latest commit"
+          else
+            echo "No changes to commit"
+          fi
 
       - name: Get token
         id: get_app_token
