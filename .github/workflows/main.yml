@@ -33,7 +33,7 @@ jobs:
         run: |
           rm -rf test-sub
 
-      - name: Update Submodule to the Latest Commit on Main
+      - name: Initialize and Update Submodule
         run: |
           git submodule update --init --recursive
           cd test-sub
