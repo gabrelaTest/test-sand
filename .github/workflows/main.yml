@@ -23,10 +23,11 @@ jobs:
 
       - name: Update Submodule to the Latest Commit on Master
         run: |
+          cd test-sub
+          git fetch
           git checkout main
           git reset --hard origin/main
-          git submodule update --init --recursive
-          git submodule update --recursive
+          cd ..
           git add test-sub
           git commit -m "Update submodule to latest commit on main" || echo "No changes to commit"
 
