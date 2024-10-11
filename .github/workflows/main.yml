@@ -37,11 +37,13 @@ jobs:
 
       - name: Push Changes
         run: |
-          git push origin update-submodules
+          git pull origin update-submodules
+          git push origin update-submodules || echo "No changes to push"
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Create Pull Request
+        if: success() && steps.push-changes.outputs.changes_pushed == 'true'
         run: gh pr create -B main -H update-submodules --title 'Merge update-submodules into main' --body 'Created by Github action'
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
