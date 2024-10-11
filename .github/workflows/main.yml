@@ -23,10 +23,16 @@ jobs:
 
       - name: Create and Checkout New Branch
         run: |
+          git pull
           git checkout -b update-submodules
+
+      - name: Clean Submodule Directory
+        run: |
+          rm -rf test-sub
 
       - name: Update Submodule to the Latest Commit on Main
         run: |
+          git submodule update --init --recursive
           cd test-sub
           git fetch
           git checkout main
@@ -36,14 +42,15 @@ jobs:
           git commit -m "Update submodule to latest commit on main" || echo "No changes to commit"
 
       - name: Push Changes
+        id: push-changes
         run: |
-          git pull origin update-submodules
+          git pull origin update-submodules || echo "No changes to pull"
           git push origin update-submodules || echo "No changes to push"
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Create Pull Request
-        if: success() && steps.push-changes.outputs.changes_pushed == 'true'
+        if: steps.push-changes.outcome == 'success'
         run: gh pr create -B main -H update-submodules --title 'Merge update-submodules into main' --body 'Created by Github action'
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
