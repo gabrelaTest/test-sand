@@ -52,8 +52,23 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
+      - name: Check for Existing PR
+        id: check-pr
+        run: |
+          gh pr list --head update-submodules --base main --json number --jq '.[0].number' > pr_number.txt
+          PR_NUMBER=$(cat pr_number.txt)
+          if [ -z "$PR_NUMBER" ]; then
+            echo "No existing PR found"
+            echo "pr_exists=false" >> $GITHUB_ENV
+          else
+            echo "Existing PR found: $PR_NUMBER"
+            echo "pr_exists=true" >> $GITHUB_ENV
+          fi
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
       - name: Create Pull Request
-        if: steps.push-changes.outcome == 'success'
+        if: steps.check-pr.outputs.pr_exists == 'false'
         run: gh pr create -B main -H update-submodules --title 'Merge update-submodules into main' --body 'Created by Github action'
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
