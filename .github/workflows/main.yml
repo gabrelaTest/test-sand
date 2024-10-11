@@ -21,6 +21,10 @@ jobs:
           git config --global user.email "${{ secrets.GH_APP_ID }}+test-pull-gabr[bot]@users.noreply.github.com"
           git config --global user.name "test-pull-gabr[bot]"
 
+      - name: Create and Checkout New Branch
+        run: |
+          git checkout -b update-submodules
+
       - name: Update Submodule to the Latest Commit on Main
         run: |
           cd test-sub
@@ -31,7 +35,13 @@ jobs:
           git add test-sub
           git commit -m "Update submodule to latest commit on main" || echo "No changes to commit"
 
+      - name: Push Changes
+        run: |
+          git push origin update-submodules
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
       - name: Create Pull Request
-        run: gh pr create -B base_branch -H branch_to_merge --title 'Merge branch_to_merge into base_branch' --body 'Created by Github action'
+        run: gh pr create -B main -H update-submodules --title 'Merge update-submodules into main' --body 'Created by Github action'
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
