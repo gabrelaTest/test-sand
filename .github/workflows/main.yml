@@ -16,6 +16,11 @@ jobs:
         with:
           submodules: true
           
+      - name: Set Git Config
+        run: |
+          git config --global user.email "${{ secrets.GH_APP_ID }}+test-pull-gabr[bot]@users.noreply.github.com"
+          git config --global user.name "test-pull-gabr[bot]"
+          
       - name: Create or Checkout Branch
         run: |
           if git rev-parse --verify update-submodules; then
