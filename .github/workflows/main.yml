@@ -44,10 +44,13 @@ jobs:
           git add test-sub
           git commit -m "Update submodule to latest commit on main" || echo "No changes to commit"
 
+      - name: Pull Remote Changes for Rebase
+        run: |
+          git pull --rebase origin update-submodules || echo "No changes to pull"
+
       - name: Push Changes
         id: push-changes
         run: |
-          git pull origin update-submodules || echo "No changes to pull"
           git push origin update-submodules || echo "No changes to push"
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
