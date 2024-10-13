@@ -15,28 +15,39 @@ jobs:
       - uses: actions/checkout@v4
         with:
           submodules: true
-          
+          ssh-key: ${{ secrets.SSH_PRIVATE_KEY }}
+
       - name: Set Git Config
         run: |
           git config --global user.email "${{ secrets.GH_APP_ID }}+test-pull-gabr[bot]@users.noreply.github.com"
           git config --global user.name "test-pull-gabr[bot]"
-          
+
       - name: Create or Checkout Branch
         run: |
-          if git rev-parse --verify update-submodules; then
+          if git show-ref --verify --quiet refs/heads/update-submodules; then
             git checkout update-submodules
-            git pull origin update-submodules
+          elif git ls-remote --exit-code --heads origin update-submodules; then
+            git checkout -b update-submodules origin/update-submodules
           else
             git checkout -b update-submodules
           fi
 
+      - name: Fetch Latest Changes
+        run: |
+          git fetch origin
+          git reset --hard origin/update-submodules || echo "No remote branch to reset to"
+
+      - name: Clean Submodule Directory
+        run: |
+          rm -rf test-sub
+
       - name: Initialize and Update Submodule
         run: |
-          git submodule update --recursive
+          git submodule update --init --recursive
           cd test-sub
+          git fetch
           git checkout main
           git reset --hard origin/main
-          git pull
           cd ..
           git add test-sub
           git commit -m "Update submodule to latest commit on main" || echo "No changes to commit"
@@ -44,7 +55,7 @@ jobs:
       - name: Push Changes
         id: push-changes
         run: |
-          git pull origin update-submodules || echo "No changes to push"
+          git pull origin update-submodules --rebase || echo "No changes to pull"
           git push origin update-submodules || echo "No changes to push"
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
@@ -65,6 +76,7 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Create Pull Request
+        if: steps.check-pr.outputs.pr_exists == 'false'
         run: gh pr create -B main -H update-submodules --title 'Merge update-submodules into main' --body 'Created by Github action'
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
