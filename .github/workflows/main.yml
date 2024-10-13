@@ -32,7 +32,6 @@ jobs:
 
       - name: Initialize and Update Submodule
         run: |
-          git submodule update --init --recursive
           cd test-sub
           git fetch
           git checkout main
