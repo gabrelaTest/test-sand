@@ -32,10 +32,11 @@ jobs:
 
       - name: Initialize and Update Submodule
         run: |
+          git submodule update --recursive
           cd test-sub
-          git fetch
           git checkout main
           git reset --hard origin/main
+          git pull
           cd ..
           git add test-sub
           git commit -m "Update submodule to latest commit on main" || echo "No changes to commit"
