@@ -24,15 +24,7 @@ jobs:
 
       - name: Create or Checkout Branch
         run: |
-          if git show-ref --verify --quiet refs/heads/update-submodules; then
-            git fetch --all
-            git checkout update-submodules
-          elif git ls-remote --exit-code --heads origin update-submodules; then
-            git checkout -b update-submodules origin/update-submodules
-          else
-            git checkout -b update-submodules
-            git push -u origin update-submodules
-          fi
+          git checkout update-submodules
 
       - name: Fetch Latest Changes
         run: |
