@@ -1,3 +1,4 @@
 [submodule "test-sub"]
 	path = test-sub
 	url = https://github.com/gabrelaTest/test-sub.git
+	branch = main
