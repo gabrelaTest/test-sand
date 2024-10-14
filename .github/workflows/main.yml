@@ -36,22 +36,19 @@ jobs:
           git add test-sub
           git commit -m "Update submodule to latest commit on main" || echo "No changes to commit"
           
-
-      # - name: Check for Changes 
-      #   id: check-changes
-      #   run: |
-      #     git diff --name-only --diff-filter=U > changed_files.txt
-      #     if [ -s changed_files.txt ]; then
-      #       echo "changes_exist=true" >> $GITHUB_ENV
-      #     else 
-      #       echo "changes_exist=false" >> $GITHUB_ENV
-      #     fi
-
+      - name: Check for Changes 
+        id: check-changes
+        run: |
+          git diff --name-only --diff-filter=U > changed_files.txt
+          if [ -s changed_files.txt ]; then
+            echo "changes_exist=true" >> $GITHUB_ENV
+          else 
+            echo "changes_exist=false" >> $GITHUB_ENV
 
       - name: Push Changes
-        if: ${{steps.check-changes.outputs.changes_exist == true}} 
+        if: ${{ steps.check-changes.outputs.changes_exist == 'true' }}
         run: |
-          git push origin update-submodules --force || 
+          git push origin update-submodules --force
 
       - name: Check for Existing PR
         id: check-pr
@@ -64,12 +61,11 @@ jobs:
           else
             echo "Existing PR found: $PR_NUMBER"
             echo "pr_exists=true" >> $GITHUB_ENV
-          fi
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Create Pull Request
-        if: ${{steps.check-pr.outputs.pr_exists == false && $ steps.check-changes.outputs.changes_exist == true}} 
+        if: ${{ steps.check-pr.outputs.pr_exists == 'false' && steps.check-changes.outputs.changes_exist == 'true' }}
         run: gh pr create -B main -H update-submodules --title 'Merge update-submodules into main' --body 'Created by Github action'
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
