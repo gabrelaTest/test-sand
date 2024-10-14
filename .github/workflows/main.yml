@@ -14,47 +14,27 @@ jobs:
     steps:
       - uses: actions/checkout@v4
         with:
-          submodules: true
-
-      - name: Set Git Config
-        run: |
-          git config --global user.email "${{ secrets.GH_APP_ID }}+test-pull-gabr[bot]@users.noreply.github.com"
-          git config --global user.name "test-pull-gabr[bot]"
+          submodules: recursive
 
       - name: Create or Checkout Branch
         run: |
-          if git rev-parse --verify update-submodules; then
-            git checkout update-submodules
-          else
-            git checkout -b update-submodules
-          fi
-
-      - name: Clean Submodule Directory
-        run: |
-          rm -rf test-sub
-
+          git checkout -b update_submodules || true
+          
       - name: Update Submodule to the Latest Commit on Main
         run: |
-          git submodule update --init --recursive
+          git submodule update --remote --recursive
           cd test-sub
-          git fetch
+          git fetch origin
           git checkout main
           git reset --hard origin/main
           cd ..
           git add test-sub
           git commit -m "Update submodule to latest commit on main" || echo "No changes to commit"
 
-      - name: Pull Remote Changes for Rebase
-        run: |
-          git fetch origin
-          git rebase origin/update-submodules || echo "No changes to rebase"
 
       - name: Push Changes
-        id: push-changes
         run: |
           git push origin update-submodules --force || echo "No changes to push"
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Check for Existing PR
         id: check-pr
