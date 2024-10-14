@@ -46,6 +46,10 @@ jobs:
             echo "changes_exist=false" >> $GITHUB_OUTPUT
           fi
 
+      - name: Print Debug Information
+        run: |
+          echo "Changes exist: ${{ steps.check-changes.outputs.changes_exist }}"
+
       - name: Push Changes
         if: ${{ steps.check-changes.outputs.changes_exist == 'true' }}
         run: |
