@@ -48,13 +48,13 @@ jobs:
           fi
 
       - name: Push Changes (if there are changes)
-        if: steps.check-changes.outputs.changes_exist == 'true'
+        if: steps.check-changes.outputs.changes_exist == true
         run: |
           git push origin update-submodules --force || echo "No changes to push"
 
       - name: Check for Existing PR (using gh)
         id: check-pr
-        if: steps.check-changes.outputs.changes_exist == 'true'
+        if: steps.check-changes.outputs.changes_exist == true
         run: |
           gh pr list --head update-submodules --base main --json number --jq '.[0].number' > pr_number.txt
           PR_NUMBER=$(cat pr_number.txt)
@@ -67,6 +67,6 @@ jobs:
           fi
 
       - name: Create Pull Request (if none exists and there are changes)
-        if: steps.check-changes.outputs.changes_exist == 'true' && steps.check-pr.outputs.pr_exists == 'false'
+        if: steps.check-changes.outputs.changes_exist == true && steps.check-pr.outputs.pr_exists == false
         run: |
           gh pr create -B main -H update-submodules --title 'Merge update-submodules into main' --body 'Created by GitHub Action'
