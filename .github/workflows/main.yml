@@ -35,6 +35,12 @@ jobs:
           cd ..
           git add test-sub
           git commit -m "Update submodule to latest commit on main" || echo "No changes to commit"
+
+      - name: Fetch All Branches and Submodules
+        run: |
+          git fetch --all
+          git submodule sync --recursive
+          git submodule update --init --recursive
           
       - name: Check for Changes 
         id: check-changes
