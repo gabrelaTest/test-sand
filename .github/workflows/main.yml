@@ -46,6 +46,8 @@ jobs:
           else
             echo "changes_exist=0" >> $GITHUB_ENV
           fi
+        env:
+          GH_TOKEN: ${{ github.token }}
 
       - name: Push Changes (if there are changes)
         # if: steps.check-changes.outputs.changes_exist == 1
@@ -65,6 +67,8 @@ jobs:
             echo "Existing PR found: $PR_NUMBER"
             echo "pr_exists=true" >> $GITHUB_ENV
           fi
+        env:
+          GH_TOKEN: ${{ github.token }}
 
       - name: Create Pull Request (if none exists and there are changes)
         # if: steps.check-changes.outputs.changes_exist == 1 && steps.check-pr.outputs.pr_exists == 0
