@@ -23,7 +23,7 @@ jobs:
 
       - name: Create or Checkout Branch
         run: |
-          git checkout -b update-submodules || true
+          git checkout -b update-submodules || git checkout update-submodules
           
       - name: Update Submodule to the Latest Commit on Main
         run: |
@@ -39,7 +39,7 @@ jobs:
       - name: Check for Changes 
         id: check-changes
         run: |
-          git diff --name-only --diff-filter=U > changed_files.txt
+          git diff --name-only > changed_files.txt
           if [ -s changed_files.txt ]; then
             echo "changes_exist=true" >> $GITHUB_ENV
           else 
