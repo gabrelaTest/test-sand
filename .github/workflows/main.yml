@@ -18,7 +18,7 @@ jobs:
 
       - name: Create or Checkout Branch
         run: |
-          git checkout -b update_submodules || true
+          git checkout -b update-submodules || true
           
       - name: Update Submodule to the Latest Commit on Main
         run: |
