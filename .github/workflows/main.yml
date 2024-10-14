@@ -39,7 +39,8 @@ jobs:
       - name: Check for Changes 
         id: check-changes
         run: |
-          git diff --name-only > changed_files.txt
+          git fetch origin
+          git diff --name-only origin/main...HEAD > changed_files.txt
           if [ -s changed_files.txt ]; then
             echo "changes_exist=true" >> $GITHUB_OUTPUT
           else 
