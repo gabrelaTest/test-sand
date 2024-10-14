@@ -52,6 +52,7 @@ jobs:
       - name: Push Changes
         if: steps.check-changes.outputs.changes_exist == 'true'
         run: |
+          git pull origin update-submodules
           git push origin update-submodules
 
       - name: Check for Existing PR
