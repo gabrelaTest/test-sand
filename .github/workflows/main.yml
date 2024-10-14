@@ -1,7 +1,7 @@
 name: Update Submodules and Create PR
+
 on:
-  repository_dispatch:
-    types: [test-submodules-update]
+  # Trigger manually or on a custom event (if preferred)
   workflow_dispatch:
 
 permissions:
@@ -14,44 +14,47 @@ jobs:
     steps:
       - uses: actions/checkout@v4
         with:
-          submodules: recursive
-          
-      - name: Set Git Config
+          submodules: recursive  # Update all submodules recursively
+
+      - name: Set Git Config (Optional)
+        # Uncomment if you need a specific author for commits
         run: |
           git config --global user.email "${{ secrets.GH_APP_ID }}+test-pull-gabr[bot]@users.noreply.github.com"
           git config --global user.name "test-pull-gabr[bot]"
 
       - name: Create or Checkout Branch
         run: |
-          git checkout -b update-submodules || true
-          
-      - name: Update Submodule to the Latest Commit on Main
+          git checkout -b update-submodules || true  # Create branch if it doesn't exist, otherwise checkout
+
+      - name: Update Submodule to Latest Commit on Main
         run: |
           git submodule update --remote --recursive
-          cd test-sub
+          cd test-sub  # Assuming your submodule directory is named "test-sub"
           git fetch origin
           git checkout main
           git reset --hard origin/main
           cd ..
           git add test-sub
           git commit -m "Update submodule to latest commit on main" || echo "No changes to commit"
-          
-      - name: Check for Changes 
+
+      - name: Check for Changes
         id: check-changes
         run: |
           git diff --name-only > changed_files.txt
           if [ -s changed_files.txt ]; then
             echo "changes_exist=true" >> $GITHUB_ENV
-          else 
+          else
             echo "changes_exist=false" >> $GITHUB_ENV
+          fi
 
-      - name: Push Changes
-        if: ${{ steps.check-changes.outputs.changes_exist == 'true' }}
+      - name: Push Changes (if there are changes)
+        if: steps.check-changes.outputs.changes_exist == 'true'
         run: |
-          git push origin update-submodules --force
+          git push origin update-submodules --force || echo "No changes to push"
 
-      - name: Check for Existing PR
+      - name: Check for Existing PR (using gh)
         id: check-pr
+        if: steps.check-changes.outputs.changes_exist == 'true'
         run: |
           gh pr list --head update-submodules --base main --json number --jq '.[0].number' > pr_number.txt
           PR_NUMBER=$(cat pr_number.txt)
@@ -61,11 +64,9 @@ jobs:
           else
             echo "Existing PR found: $PR_NUMBER"
             echo "pr_exists=true" >> $GITHUB_ENV
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          fi
 
-      - name: Create Pull Request
-        if: ${{ steps.check-pr.outputs.pr_exists == 'false' && steps.check-changes.outputs.changes_exist == 'true' }}
-        run: gh pr create -B main -H update-submodules --title 'Merge update-submodules into main' --body 'Created by Github action'
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      - name: Create Pull Request (if none exists and there are changes)
+        if: steps.check-changes.outputs.changes_exist == 'true' && steps.check-pr.outputs.pr_exists == 'false'
+        run: |
+          gh pr create -B main -H update-submodules --title 'Merge update-submodules into main' --body 'Created by GitHub Action'
