@@ -31,12 +31,7 @@ jobs:
 
       - name: Create or Checkout Branch 
         run: |
-          if ! git ls-remote --heads origin update-submodules | grep -q update-submodules; then
-            git checkout -b update-submodules
-          else
-            git checkout update-submodules
-            git reset --hard origin/update-submodules
-          fi
+          git checkout -b update-submodules || git checkout update-submodules
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
