@@ -44,6 +44,7 @@ jobs:
             echo "changes_exist=true" >> $GITHUB_ENV
           else 
             echo "changes_exist=false" >> $GITHUB_ENV
+          fi
 
       - name: Push Changes
         if: ${{ steps.check-changes.outputs.changes_exist == 'true' }}
@@ -61,6 +62,7 @@ jobs:
           else
             echo "Existing PR found: $PR_NUMBER"
             echo "pr_exists=true" >> $GITHUB_ENV
+          fi
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
