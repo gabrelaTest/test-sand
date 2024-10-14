@@ -53,15 +53,16 @@ jobs:
 
       - name: Check for Existing PR
         id: check-pr
+        if: ${{ steps.check-changes.outputs.changes_exist == 'true' }}
         run: |
           gh pr list --head update-submodules --base main --json number --jq '.[0].number' > pr_number.txt
           PR_NUMBER=$(cat pr_number.txt)
           if [ -z "$PR_NUMBER" ]; then
             echo "No existing PR found"
-            echo "pr_exists=false" >> $GITHUB_ENV
+            echo "pr_exists=false" >> $GITHUB_OUTPUT
           else
             echo "Existing PR found: $PR_NUMBER"
-            echo "pr_exists=true" >> $GITHUB_ENV
+            echo "pr_exists=true" >> $GITHUB_OUTPUT
           fi
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
