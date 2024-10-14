@@ -25,8 +25,11 @@ jobs:
       - name: Create or Checkout Branch (Force Delete if no PR exists)
         run: |
           if ! gh pr list --head update-submodules --base main --json number --jq '.[0].number' > pr_number.txt; then
-            git checkout update-submodules -f || git branch -D update-submodules
-            git checkout -b update-submodules
+            if ! git branch -a | grep -q update-submodules; then
+              git checkout -b update-submodules
+            else
+              git checkout update-submodules
+            fi
           fi
 
       - name: Update Submodule to the Latest Commit on Main
@@ -39,7 +42,6 @@ jobs:
           cd ..
           git add test-sub
           git commit -m "Update submodule to latest commit on main" || echo "No changes to commit"
-
       - name: Check for Changes
         id: check-changes
         run: |
