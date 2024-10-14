@@ -71,7 +71,7 @@ jobs:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Create Pull Request
-        if: steps.check-changes.outputs.changes_exist == 'true'
+        if: steps.check-pr.outputs.pr_exists == 'false'
         run: gh pr create -B main -H update-submodules --title 'Merge update-submodules into main' --body 'Created by GitHub Action'
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
